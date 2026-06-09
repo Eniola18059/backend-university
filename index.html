@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE Institute — Eniola's Backend + DevOps Curriculum</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --bg2: #0d1117;
+    --bg3: #111827;
+    --surface: #161d2b;
+    --surface2: #1e2a3a;
+    --border: rgba(99,179,237,0.12);
+    --border2: rgba(99,179,237,0.25);
+    --accent: #63b3ed;
+    --accent2: #4299e1;
+    --accent3: #90cdf4;
+    --gold: #f6c94e;
+    --gold2: #ecc94b;
+    --green: #68d391;
+    --red: #fc8181;
+    --orange: #f6ad55;
+    --purple: #b794f4;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Syne', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99,179,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,179,237,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .orb { position: fixed; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: 0; }
+  .orb1 { width: 600px; height: 600px; background: #63b3ed; top: -200px; right: -200px; }
+  .orb2 { width: 400px; height: 400px; background: #b794f4; bottom: 20%; left: -150px; }
+  .orb3 { width: 300px; height: 300px; background: #68d391; bottom: 5%; right: 10%; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,10,15,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 4rem; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: var(--display); font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 12px; color: var(--text2); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-badge { font-family: var(--mono); font-size: 11px; background: rgba(99,179,237,0.1); color: var(--accent); border: 1px solid var(--border2); padding: 4px 12px; border-radius: 4px; }
+
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 100px 4rem 6rem; max-width: 1400px; margin: 0 auto;
+  }
+  .hero-content { max-width: 820px; }
+
+  .hero-tag {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 2rem;
+  }
+  .hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+
+  .hero-title {
+    font-family: var(--display); font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 800; line-height: 1.0; letter-spacing: -0.03em;
+    margin-bottom: 1.5rem; color: var(--text);
+  }
+  .hero-title .line2 { color: transparent; -webkit-text-stroke: 1px rgba(99,179,237,0.5); }
+  .hero-title .accent { color: var(--accent); }
+
+  .hero-sub { font-size: 18px; color: var(--text2); max-width: 600px; margin-bottom: 3rem; line-height: 1.7; font-weight: 300; }
+
+  .hero-stats { display: flex; gap: 3rem; margin-bottom: 3rem; flex-wrap: wrap; }
+  .stat-num { font-family: var(--display); font-size: 2.5rem; font-weight: 800; color: var(--text); line-height: 1; }
+  .stat-num span { color: var(--accent); }
+  .stat-label { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.08em; margin-top: 4px; }
+
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary { font-family: var(--mono); font-size: 13px; background: var(--accent); color: var(--bg); padding: 14px 32px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; letter-spacing: 0.05em; text-decoration: none; transition: all 0.2s; display: inline-block; }
+  .btn-primary:hover { background: var(--accent3); transform: translateY(-1px); }
+  .btn-secondary { font-family: var(--mono); font-size: 13px; background: transparent; color: var(--text2); padding: 14px 32px; border: 1px solid var(--border2); border-radius: 4px; cursor: pointer; letter-spacing: 0.05em; text-decoration: none; transition: all 0.2s; display: inline-block; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  section { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 6rem 4rem; }
+  .section-tag { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+  .section-title { font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; color: var(--text); }
+  .section-sub { font-size: 16px; color: var(--text2); max-width: 600px; margin-bottom: 4rem; font-weight: 300; }
+
+  /* Daily schedule strip */
+  .daily-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  .day-block { text-align: center; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); }
+  .day-time { font-family: var(--display); font-size: 1.8rem; font-weight: 800; color: var(--text); }
+  .day-time span { color: var(--accent); font-size: 1rem; }
+  .day-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; margin-top: 4px; }
+  .day-note { font-size: 12px; color: var(--text2); margin-top: 8px; }
+
+  /* Curriculum grid */
+  .curriculum-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 4rem; }
+  .curr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: all 0.2s; cursor: pointer; text-decoration: none; display: block; }
+  .curr-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .curr-num { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .curr-title { font-family: var(--display); font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .curr-months { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .curr-bar { height: 2px; border-radius: 2px; margin-top: 12px; }
+
+  /* Semesters */
+  .semesters { display: flex; flex-direction: column; gap: 2rem; }
+  .semester { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; transition: border-color 0.3s; }
+  .semester:hover { border-color: var(--border2); }
+
+  .semester-header {
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center; gap: 1.5rem;
+    padding: 1.5rem 2rem; cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .sem-num { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.1em; writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
+  .sem-phase { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; margin-bottom: 6px; padding: 3px 10px; border-radius: 3px; display: inline-block; }
+  .sem-title { font-family: var(--display); font-size: 1.4rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .sem-meta { font-size: 13px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
+  .sem-right { text-align: right; }
+  .sem-duration { font-family: var(--display); font-size: 1.8rem; font-weight: 800; color: var(--text); }
+  .sem-duration-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; }
+
+  .semester-body { padding: 2rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; }
+
+  .col-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+  .skill-list { display: flex; flex-direction: column; gap: 8px; }
+  .skill-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(99,179,237,0.04); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text2); font-family: var(--mono); }
+  .skill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* DevOps daily column */
+  .devops-col {}
+  .devops-item { border: 1px solid rgba(104,211,145,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 8px; background: rgba(104,211,145,0.03); }
+  .devops-week { font-family: var(--mono); font-size: 10px; color: #68d391; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .devops-topic { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .devops-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+  /* Projects */
+  .project { border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; background: var(--bg2); transition: border-color 0.2s; }
+  .project:hover { border-color: var(--border2); }
+  .project-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 8px; }
+  .project-name { font-family: var(--display); font-size: 14px; font-weight: 600; color: var(--text); }
+  .diff-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
+  .diff-hard { background: rgba(252,129,129,0.1); color: var(--red); border: 1px solid rgba(252,129,129,0.2); }
+  .diff-medium { background: rgba(246,173,85,0.1); color: var(--orange); border: 1px solid rgba(246,173,85,0.2); }
+  .diff-legendary { background: rgba(246,201,78,0.1); color: var(--gold); border: 1px solid rgba(246,201,78,0.3); }
+  .project-desc { font-size: 12px; color: var(--text3); line-height: 1.6; margin-bottom: 10px; }
+  .project-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .ptag { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; background: rgba(99,179,237,0.08); color: var(--accent); border: 1px solid rgba(99,179,237,0.15); }
+
+  .boss-project { border: 1px solid rgba(246,201,78,0.3); background: rgba(246,201,78,0.04); position: relative; }
+  .boss-project::before { content: '🔥 BOSS PROJECT'; position: absolute; top: 0; right: 0; font-family: var(--mono); font-size: 9px; background: rgba(246,201,78,0.15); color: var(--gold); padding: 4px 10px; border-bottom-left-radius: 6px; letter-spacing: 0.1em; }
+  .boss-project .project-name { color: var(--gold); }
+
+  .outcome-bar { display: flex; align-items: center; gap: 2rem; padding: 1.5rem 2rem; border-top: 1px solid var(--border); background: rgba(99,179,237,0.03); flex-wrap: wrap; }
+  .outcome-item { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text3); }
+  .outcome-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  /* Requirements */
+  .req-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+  .req-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; }
+  .req-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+  .req-title { font-family: var(--display); font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .req-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* Outcome section */
+  .outcome-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .outcome-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; text-align: center; }
+  .outcome-big { font-family: var(--display); font-size: 2.2rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 8px; }
+  .outcome-big span { color: var(--accent); }
+  .outcome-label { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 0.08em; }
+
+  footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem 4rem; max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+  .footer-logo { font-family: var(--display); font-size: 16px; font-weight: 800; color: var(--text2); }
+  .footer-logo span { color: var(--accent); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-content > * { animation: fadeUp 0.6s ease forwards; opacity: 0; }
+  .hero-tag { animation-delay: 0.1s; }
+  .hero-title { animation-delay: 0.2s; }
+  .hero-sub { animation-delay: 0.3s; }
+  .hero-stats { animation-delay: 0.4s; }
+  .hero-cta { animation-delay: 0.5s; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 1.5rem 4rem; }
+    section { padding: 4rem 1.5rem; }
+    .semester-body { grid-template-columns: 1fr; }
+    .curriculum-grid { grid-template-columns: repeat(2, 1fr); }
+    .req-grid { grid-template-columns: 1fr; }
+    .outcome-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats { gap: 1.5rem; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<nav>
+  <div class="nav-logo">FORGE<span>.</span>institute</div>
+  <ul class="nav-links">
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#curriculum">Curriculum</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+  </ul>
+  <div class="nav-badge">// Eniola · Backend + DevOps · 2026</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">Backend Engineering + DevOps · 18 Months · Hard Mode · Eniola</div>
+    <h1 class="hero-title">
+      Build systems<br>
+      <span class="line2">that ship,</span><br>
+      <span class="accent">scale, survive.</span>
+    </h1>
+    <p class="hero-sub">An 18-month, project-first Backend + DevOps engineering program. 7 hours of backend daily. 1 hour of DevOps daily. No shortcuts. No tutorials. Real systems, real deployments, real pressure.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">18<span>mo</span></div>
+        <div class="stat-label">// duration</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">40<span>h</span></div>
+        <div class="stat-label">// per week</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">// phases</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">10<span>+</span></div>
+        <div class="stat-label">// live projects</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1<span>hr</span></div>
+        <div class="stat-label">// devops daily</div>
+      </div>
+    </div>
+    <div class="hero-cta">
+      <a href="#curriculum" class="btn-primary">View Curriculum →</a>
+      <a href="#schedule" class="btn-secondary">Daily Schedule</a>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Schedule -->
+<section id="schedule">
+  <div class="section-tag">// daily structure</div>
+  <h2 class="section-title">Every single day. No exceptions.</h2>
+  <p class="section-sub">40 hours per week broken into a daily structure that builds two disciplines simultaneously.</p>
+
+  <div class="daily-strip">
+    <div class="day-block">
+      <div class="day-time">7<span>hrs</span></div>
+      <div class="day-label">// backend focus</div>
+      <div class="day-note">Core learning, projects, reading docs, building</div>
+    </div>
+    <div class="day-block" style="border-color: rgba(104,211,145,0.3);">
+      <div class="day-time" style="color: var(--green);">1<span style="color:var(--green)">hr</span></div>
+      <div class="day-label">// devops daily</div>
+      <div class="day-note">Linux, Docker, CI/CD, cloud — every single day</div>
+    </div>
+    <div class="day-block">
+      <div class="day-time">8<span>hrs</span></div>
+      <div class="day-label">// total per day</div>
+      <div class="day-note">5 days per week. Treat it like a job.</div>
+    </div>
+    <div class="day-block">
+      <div class="day-time">180<span>+</span></div>
+      <div class="day-label">// devops hours</div>
+      <div class="day-note">Accumulated by month 6 from daily 1hr sessions</div>
+    </div>
+    <div class="day-block" style="border-color: rgba(246,201,78,0.3);">
+      <div class="day-time" style="color:var(--gold);">2</div>
+      <div class="day-label">// disciplines</div>
+      <div class="day-note">Backend Engineer + DevOps Engineer. Both. Fully.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Overview -->
+<section id="overview">
+  <div class="section-tag">// program overview</div>
+  <h2 class="section-title">Five phases. Both tracks. Every day.</h2>
+  <p class="section-sub">Backend and DevOps run in parallel from day one. By Phase 3 you are already dangerous at both.</p>
+
+  <div class="curriculum-grid">
+    <a href="#phase1" class="curr-card">
+      <div class="curr-num">01 · Months 1–3</div>
+      <div class="curr-title">Python Mastery + SQL</div>
+      <div class="curr-months">DevOps: Linux CLI + Bash</div>
+      <div class="curr-bar" style="background: linear-gradient(90deg, #68d391, transparent);"></div>
+    </a>
+    <a href="#phase2" class="curr-card">
+      <div class="curr-num">02 · Months 4–6</div>
+      <div class="curr-title">REST APIs + Django</div>
+      <div class="curr-months">DevOps: Docker + Compose</div>
+      <div class="curr-bar" style="background: linear-gradient(90deg, #63b3ed, transparent);"></div>
+    </a>
+    <a href="#phase3" class="curr-card">
+      <div class="curr-num">03 · Months 7–9</div>
+      <div class="curr-title">Deploy + Production</div>
+      <div class="curr-months">DevOps: Full focus — VPS, CI/CD</div>
+      <div class="curr-bar" style="background: linear-gradient(90deg, #b794f4, transparent);"></div>
+    </a>
+    <a href="#phase4" class="curr-card">
+      <div class="curr-num">04 · Months 10–12</div>
+      <div class="curr-title">Scale + Security</div>
+      <div class="curr-months">DevOps: Kubernetes + Monitoring</div>
+      <div class="curr-bar" style="background: linear-gradient(90deg, #f6ad55, transparent);"></div>
+    </a>
+    <a href="#phase5" class="curr-card">
+      <div class="curr-num">05 · Months 13–18</div>
+      <div class="curr-title">Go + AWS + Job Ready</div>
+      <div class="curr-months">DevOps: Terraform + IaC</div>
+      <div class="curr-bar" style="background: linear-gradient(90deg, #f6c94e, transparent);"></div>
+    </a>
+  </div>
+</section>
+
+<!-- Curriculum -->
+<section id="curriculum">
+  <div class="section-tag">// full curriculum</div>
+  <h2 class="section-title">18 months. No excuses.</h2>
+  <p class="section-sub">Three columns per phase: backend skills, DevOps daily track, and projects. Everything builds on what came before.</p>
+
+  <div class="semesters">
+
+    <!-- Phase 1 -->
+    <div class="semester" id="phase1">
+      <div class="semester-header">
+        <div class="sem-num">PHASE 01</div>
+        <div class="sem-info">
+          <div class="sem-phase" style="background: rgba(104,211,145,0.1); color: #68d391; border: 1px solid rgba(104,211,145,0.2);">Foundation · Months 1–3</div>
+          <div class="sem-title">Python Mastery + SQL · DevOps: Linux + Bash</div>
+          <div class="sem-meta">// raw Python · PostgreSQL · OOP · Data structures · Git · 1hr/day Linux CLI + Bash scripting</div>
+        </div>
+        <div class="sem-right">
+          <div class="sem-duration">3</div>
+          <div class="sem-duration-label">MONTHS</div>
+        </div>
+      </div>
+
+      <div class="semester-body">
+        <div class="skills-col">
+          <div class="col-label">// backend skills</div>
+          <div class="skill-list">
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>Advanced Python — OOP, decorators, generators, context managers</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>PostgreSQL — queries, joins, indexes, constraints, transactions</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>Data structures — linked lists, stacks, queues, trees, hash maps</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>Algorithms — sorting, searching, Big O notation</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>File I/O — CSV, JSON, XML parsing and writing</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#68d391"></div>Git advanced — branching, rebasing, conflict resolution</div>
+          </div>
+        </div>
+
+        <div class="devops-col">
+          <div class="col-label" style="color:#68d391;">// devops daily (1hr)</div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 1–4</div>
+            <div class="devops-topic">Linux CLI fundamentals</div>
+            <div class="devops-desc">Navigation, permissions, users, processes, file system, package management (apt). Live on a Linux terminal every day.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 5–8</div>
+            <div class="devops-topic">Bash scripting</div>
+            <div class="devops-desc">Write scripts that automate repetitive tasks. Variables, loops, conditionals, functions, cron jobs.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 9–12</div>
+            <div class="devops-topic">SSH + networking basics</div>
+            <div class="devops-desc">SSH keys, remote server access, basic networking — IP, DNS, ports, firewall rules with ufw.</div>
+          </div>
+        </div>
+
+        <div class="projects-col">
+          <div class="col-label">// projects</div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Bank Account CLI System</div>
+              <div class="diff-badge diff-medium">MEDIUM</div>
+            </div>
+            <div class="project-desc">Full command-line banking app. Accounts, transfers, interest, overdraft. All data in PostgreSQL. No frameworks allowed.</div>
+            <div class="project-tags"><span class="ptag">Python</span><span class="ptag">PostgreSQL</span><span class="ptag">OOP</span></div>
+          </div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Grade Analytics Engine</div>
+              <div class="diff-badge diff-medium">MEDIUM</div>
+            </div>
+            <div class="project-desc">Import 500+ student CSV records. Calculate GPAs, detect anomalies. Pure Python only — no pandas. Optimise for speed.</div>
+            <div class="project-tags"><span class="ptag">Python</span><span class="ptag">SQL</span><span class="ptag">Algorithms</span></div>
+          </div>
+          <div class="project boss-project">
+            <div class="project-top" style="margin-top:1rem;">
+              <div class="project-name">Inventory Management System</div>
+              <div class="diff-badge diff-legendary">BOSS</div>
+            </div>
+            <div class="project-desc">Full CLI app. Products, suppliers, stock alerts, purchase orders. PostgreSQL with indexes. Must handle 10,000+ records without lag. Automated with a bash deploy script.</div>
+            <div class="project-tags"><span class="ptag">Python</span><span class="ptag">PostgreSQL</span><span class="ptag">Bash</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outcome-bar">
+        <div class="outcome-item"><div class="outcome-dot"></div>3 projects in GitHub</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>PostgreSQL proficient</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Linux CLI comfortable</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Bash scripts written</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>SSH access mastered</div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="semester" id="phase2">
+      <div class="semester-header">
+        <div class="sem-num">PHASE 02</div>
+        <div class="sem-info">
+          <div class="sem-phase" style="background: rgba(99,179,237,0.1); color: #63b3ed; border: 1px solid rgba(99,179,237,0.2);">API Engineering · Months 4–6</div>
+          <div class="sem-title">REST APIs + Django · DevOps: Docker + Compose</div>
+          <div class="sem-meta">// FastAPI · Django REST · JWT · Pytest · Swagger · 1hr/day Docker fundamentals + Compose</div>
+        </div>
+        <div class="sem-right">
+          <div class="sem-duration">3</div>
+          <div class="sem-duration-label">MONTHS</div>
+        </div>
+      </div>
+
+      <div class="semester-body">
+        <div class="skills-col">
+          <div class="col-label">// backend skills</div>
+          <div class="skill-list">
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>FastAPI — routes, middleware, dependency injection, async</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>Django REST Framework — serializers, viewsets, permissions</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>JWT Authentication — access tokens, refresh, revocation, RBAC</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>Pytest — unit tests, integration tests, fixtures, mocking</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>Swagger/OpenAPI — auto-generated API documentation</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#63b3ed"></div>Database migrations — Alembic, Django migrations, rollbacks</div>
+          </div>
+        </div>
+
+        <div class="devops-col">
+          <div class="col-label" style="color:#68d391;">// devops daily (1hr)</div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 13–16</div>
+            <div class="devops-topic">Docker fundamentals</div>
+            <div class="devops-desc">Images, containers, volumes, networks. Write Dockerfiles for every project. Understand layer caching and image optimisation.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 17–20</div>
+            <div class="devops-topic">Docker Compose</div>
+            <div class="devops-desc">Multi-service orchestration. App + PostgreSQL + Nginx in one compose file. Environment variables, health checks, restart policies.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 21–24</div>
+            <div class="devops-topic">Container networking + registries</div>
+            <div class="devops-desc">Push images to Docker Hub and GitHub Container Registry. Understand bridge networks, port mapping, and container DNS.</div>
+          </div>
+        </div>
+
+        <div class="projects-col">
+          <div class="col-label">// projects</div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Authentication API from Scratch</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Register, login, logout, refresh tokens, password reset, RBAC. 30+ Pytest tests. Swagger docs. Dockerised. No auth library shortcuts.</div>
+            <div class="project-tags"><span class="ptag">FastAPI</span><span class="ptag">JWT</span><span class="ptag">Pytest</span><span class="ptag">Docker</span></div>
+          </div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">E-Commerce Backend API</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Django REST Framework. Products, cart, orders, mock Paystack integration, email notifications, admin panel. Full Swagger docs. Dockerised with Compose.</div>
+            <div class="project-tags"><span class="ptag">Django</span><span class="ptag">DRF</span><span class="ptag">Docker</span><span class="ptag">Paystack</span></div>
+          </div>
+          <div class="project boss-project">
+            <div class="project-top" style="margin-top:1rem;">
+              <div class="project-name">Academy Backend API — Goes Live</div>
+              <div class="diff-badge diff-legendary">BOSS</div>
+            </div>
+            <div class="project-desc">Build a full cybersecurity academy backend. Courses, lessons, progress tracking, certificates, payments. FastAPI + PostgreSQL + JWT. Dockerised. This goes live with real users.</div>
+            <div class="project-tags"><span class="ptag">FastAPI</span><span class="ptag">PostgreSQL</span><span class="ptag">Docker</span><span class="ptag">Live</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outcome-bar">
+        <div class="outcome-item"><div class="outcome-dot"></div>2 full REST APIs shipped</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>30+ passing tests written</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Academy backend live</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>All projects Dockerised</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Docker Compose mastered</div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="semester" id="phase3">
+      <div class="semester-header">
+        <div class="sem-num">PHASE 03</div>
+        <div class="sem-info">
+          <div class="sem-phase" style="background: rgba(183,148,244,0.1); color: #b794f4; border: 1px solid rgba(183,148,244,0.2);">DevOps Intensive · Months 7–9</div>
+          <div class="sem-title">Production Deployment · DevOps: VPS + Nginx + CI/CD</div>
+          <div class="sem-meta">// VPS · Nginx · SSL · GitHub Actions · Linux hardening · 1hr/day = full DevOps immersion this phase</div>
+        </div>
+        <div class="sem-right">
+          <div class="sem-duration">3</div>
+          <div class="sem-duration-label">MONTHS</div>
+        </div>
+      </div>
+
+      <div class="semester-body">
+        <div class="skills-col">
+          <div class="col-label">// backend skills</div>
+          <div class="skill-list">
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>Async Python — asyncio, async/await patterns, concurrency</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>Background tasks — Celery basics, task queues, scheduled jobs</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>Email integration — SMTP, SendGrid, email templates</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>File uploads — S3-compatible storage, file validation, streaming</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>API versioning — backward compatibility, deprecation strategies</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#b794f4"></div>Environment management — dotenv, secrets, config by environment</div>
+          </div>
+        </div>
+
+        <div class="devops-col">
+          <div class="col-label" style="color:#68d391;">// devops daily (1hr)</div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 25–28</div>
+            <div class="devops-topic">VPS setup from scratch</div>
+            <div class="devops-desc">Rent a server. Install Ubuntu. Configure firewall, fail2ban, SSH hardening. Deploy your first app manually via SSH. Handle a simulated crash.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 29–32</div>
+            <div class="devops-topic">Nginx + SSL/HTTPS</div>
+            <div class="devops-desc">Configure Nginx as reverse proxy. Set up Let's Encrypt SSL. Force HTTPS redirect. Serve multiple apps from one server on different subdomains.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 33–36</div>
+            <div class="devops-topic">GitHub Actions CI/CD</div>
+            <div class="devops-desc">Automated test → build → deploy pipeline. Tests must pass before deployment triggers. Zero manual deployments from this point forward.</div>
+          </div>
+        </div>
+
+        <div class="projects-col">
+          <div class="col-label">// projects</div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Containerise All Previous Projects</div>
+              <div class="diff-badge diff-medium">MEDIUM</div>
+            </div>
+            <div class="project-desc">Every Phase 1 and 2 project gets Dockerised with Compose. App + DB + Nginx. No project left behind. Zero excuses.</div>
+            <div class="project-tags"><span class="ptag">Docker</span><span class="ptag">Nginx</span><span class="ptag">Compose</span></div>
+          </div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Deploy Live API on VPS with SSL</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Ubuntu VPS from scratch via SSH. Deploy e-commerce API. Configure SSL with Let's Encrypt. Monitor logs. Simulate crash. Recover without data loss.</div>
+            <div class="project-tags"><span class="ptag">Linux</span><span class="ptag">SSH</span><span class="ptag">SSL</span><span class="ptag">Nginx</span></div>
+          </div>
+          <div class="project boss-project">
+            <div class="project-top" style="margin-top:1rem;">
+              <div class="project-name">CI/CD Pipeline — Zero Manual Deploys</div>
+              <div class="diff-badge diff-legendary">BOSS</div>
+            </div>
+            <div class="project-desc">GitHub Actions for the academy backend. Every push triggers tests. Tests fail = no deploy. Zero manual deployments from this point forever. Every commit ships automatically.</div>
+            <div class="project-tags"><span class="ptag">GitHub Actions</span><span class="ptag">Docker</span><span class="ptag">VPS</span><span class="ptag">Automation</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outcome-bar">
+        <div class="outcome-item"><div class="outcome-dot"></div>Live VPS with SSL</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>CI/CD pipeline live</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Zero manual deploys</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>All projects containerised</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Nginx multi-app configured</div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="semester" id="phase4">
+      <div class="semester-header">
+        <div class="sem-num">PHASE 04</div>
+        <div class="sem-info">
+          <div class="sem-phase" style="background: rgba(246,173,85,0.1); color: #f6ad55; border: 1px solid rgba(246,173,85,0.2);">Scale & Security · Months 10–12</div>
+          <div class="sem-title">Performance + Security · DevOps: Kubernetes + Monitoring</div>
+          <div class="sem-meta">// Redis · Celery · WebSockets · OWASP · Rate limiting · 1hr/day Kubernetes + Sentry + alerting</div>
+        </div>
+        <div class="sem-right">
+          <div class="sem-duration">3</div>
+          <div class="sem-duration-label">MONTHS</div>
+        </div>
+      </div>
+
+      <div class="semester-body">
+        <div class="skills-col">
+          <div class="col-label">// backend skills</div>
+          <div class="skill-list">
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>Redis — caching, pub/sub, session storage, rate limiting</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>Celery — async task queues, scheduled jobs, retry logic</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>WebSockets — real-time bidirectional communication</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>OWASP Top 10 — SQL injection, XSS, CSRF, auth vulnerabilities</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>Rate limiting — IP-based, token bucket, sliding window algorithms</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6ad55"></div>PostgreSQL tuning — EXPLAIN ANALYZE, slow query log, indexing</div>
+          </div>
+        </div>
+
+        <div class="devops-col">
+          <div class="col-label" style="color:#68d391;">// devops daily (1hr)</div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 37–40</div>
+            <div class="devops-topic">Kubernetes fundamentals</div>
+            <div class="devops-desc">Pods, deployments, services, ingress, config maps, secrets. Run your apps on a local Kubernetes cluster with Minikube or Kind.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 41–44</div>
+            <div class="devops-topic">Monitoring + alerting</div>
+            <div class="devops-desc">Sentry for error tracking. Prometheus + Grafana for metrics. Set up alerts that page you when things break. Log aggregation with structured logging.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 45–48</div>
+            <div class="devops-topic">Load balancing + auto-scaling</div>
+            <div class="devops-desc">Horizontal pod autoscaling in Kubernetes. Configure health checks. Simulate traffic spikes and watch the cluster scale automatically.</div>
+          </div>
+        </div>
+
+        <div class="projects-col">
+          <div class="col-label">// projects</div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Real-Time Notification System</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">WebSocket notifications for the academy. Lesson completions notify instructors instantly. Redis message broker. Must handle 100 concurrent connections without crashing.</div>
+            <div class="project-tags"><span class="ptag">WebSockets</span><span class="ptag">Redis</span><span class="ptag">Async</span></div>
+          </div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Security Hardening + Rate Limiter</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Rate limit every endpoint. Brute force protection, SQL injection prevention, input sanitisation. Run OWASP checks on your own API. Fix every vulnerability found.</div>
+            <div class="project-tags"><span class="ptag">Security</span><span class="ptag">OWASP</span><span class="ptag">Redis</span></div>
+          </div>
+          <div class="project boss-project">
+            <div class="project-top" style="margin-top:1rem;">
+              <div class="project-name">Load Test — 500 req/sec Target</div>
+              <div class="diff-badge diff-legendary">BOSS</div>
+            </div>
+            <div class="project-desc">Locust to simulate 1,000 concurrent users. Identify bottlenecks. Add Redis caching. Optimise slow queries with EXPLAIN ANALYZE. Target: 500 req/sec under 200ms. Deploy on Kubernetes.</div>
+            <div class="project-tags"><span class="ptag">Locust</span><span class="ptag">Redis</span><span class="ptag">PostgreSQL</span><span class="ptag">Kubernetes</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outcome-bar">
+        <div class="outcome-item"><div class="outcome-dot"></div>500 req/sec achieved</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>OWASP vulnerabilities patched</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Kubernetes cluster running</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Monitoring dashboards live</div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="semester" id="phase5">
+      <div class="semester-header">
+        <div class="sem-num">PHASE 05</div>
+        <div class="sem-info">
+          <div class="sem-phase" style="background: rgba(246,201,78,0.1); color: #f6c94e; border: 1px solid rgba(246,201,78,0.3);">Mastery · Months 13–18</div>
+          <div class="sem-title">Go Language + AWS · DevOps: Terraform + IaC</div>
+          <div class="sem-meta">// Go · AWS EC2/RDS/S3 · Microservices · System design · 1hr/day Terraform + infrastructure as code</div>
+        </div>
+        <div class="sem-right">
+          <div class="sem-duration">6</div>
+          <div class="sem-duration-label">MONTHS</div>
+        </div>
+      </div>
+
+      <div class="semester-body">
+        <div class="skills-col">
+          <div class="col-label">// backend skills</div>
+          <div class="skill-list">
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>Go language — syntax, goroutines, channels, interfaces, testing</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>gRPC — protocol buffers, service-to-service communication</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>Microservices — service decomposition, API gateways, event buses</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>System design — CAP theorem, eventual consistency, caching strategies</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>Message queues — RabbitMQ or Kafka for event-driven architecture</div>
+            <div class="skill-item"><div class="skill-dot" style="background:#f6c94e"></div>Technical interviews — system design, DSA, live coding prep</div>
+          </div>
+        </div>
+
+        <div class="devops-col">
+          <div class="col-label" style="color:#68d391;">// devops daily (1hr)</div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 49–56</div>
+            <div class="devops-topic">AWS core services</div>
+            <div class="devops-desc">EC2, RDS, S3, CloudFront, IAM, VPC, Route 53. Deploy real infrastructure manually first. Understand what each service costs and why.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 57–64</div>
+            <div class="devops-topic">Terraform — infrastructure as code</div>
+            <div class="devops-desc">Write Terraform to provision your entire AWS stack. Version control your infrastructure. Destroy and recreate your environment in minutes from code alone.</div>
+          </div>
+          <div class="devops-item">
+            <div class="devops-week">WEEKS 65–72</div>
+            <div class="devops-topic">EKS + production hardening</div>
+            <div class="devops-desc">Run Kubernetes on AWS EKS. Configure auto-scaling groups, managed node groups, IAM roles for service accounts. Production-grade cluster security.</div>
+          </div>
+        </div>
+
+        <div class="projects-col">
+          <div class="col-label">// projects</div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Rebuild Auth API in Go</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Rebuild Phase 2 auth API completely in Go. Benchmark against Python version. Go must handle 10x more requests per second. Document and publish the comparison.</div>
+            <div class="project-tags"><span class="ptag">Go</span><span class="ptag">JWT</span><span class="ptag">Benchmarking</span><span class="ptag">gRPC</span></div>
+          </div>
+          <div class="project">
+            <div class="project-top">
+              <div class="project-name">Migrate Academy to AWS with Terraform</div>
+              <div class="diff-badge diff-hard">HARD</div>
+            </div>
+            <div class="project-desc">Move from VPS to AWS. EC2, RDS, S3, CloudFront. Entire infrastructure provisioned with Terraform. Zero downtime migration. Auto-scaling configured. Monthly cost optimised.</div>
+            <div class="project-tags"><span class="ptag">AWS</span><span class="ptag">Terraform</span><span class="ptag">RDS</span><span class="ptag">S3</span></div>
+          </div>
+          <div class="project boss-project">
+            <div class="project-top" style="margin-top:1rem;">
+              <div class="project-name">Open Source PR — 1,000+ Star Repo</div>
+              <div class="diff-badge diff-legendary">FINAL BOSS</div>
+            </div>
+            <div class="project-desc">Find a real Python or Go project with 1,000+ GitHub stars. Read the entire codebase. Fix a real bug or add a real feature. Get your pull request merged by maintainers. Goes on your CV forever.</div>
+            <div class="project-tags"><span class="ptag">Open Source</span><span class="ptag">Python/Go</span><span class="ptag">PR Merged</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="outcome-bar">
+        <div class="outcome-item"><div class="outcome-dot"></div>Go language shipped</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>AWS + Terraform mastered</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Open source PR merged</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>$60–100k remote job ready</div>
+        <div class="outcome-item"><div class="outcome-dot"></div>Full DevOps + Backend engineer</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- What you will be -->
+<section>
+  <div class="section-tag">// after 18 months</div>
+  <h2 class="section-title">What you will become</h2>
+  <p class="section-sub">Not just a developer. A full Backend + DevOps engineer who builds, ships, secures, and scales production systems.</p>
+
+  <div class="outcome-grid">
+    <div class="outcome-card">
+      <div class="outcome-big">10<span>+</span></div>
+      <div class="outcome-label">// live projects shipped</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-big">5</div>
+      <div class="outcome-label">// languages & frameworks</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-big">180<span>+</span></div>
+      <div class="outcome-label">// devops hours accumulated</div>
+    </div>
+    <div class="outcome-card">
+      <div class="outcome-big" style="color:var(--gold);">$80k<span>+</span></div>
+      <div class="outcome-label">// remote job potential/year</div>
+    </div>
+  </div>
+</section>
+
+<!-- Requirements -->
+<section id="requirements">
+  <div class="section-tag">// what this demands</div>
+  <h2 class="section-title">The rules. Non-negotiable.</h2>
+  <p class="section-sub">This is not a course. It is a commitment. Here is what you are signing up for.</p>
+
+  <div class="req-grid">
+    <div class="req-card">
+      <div class="req-icon">⏱</div>
+      <div class="req-title">40 hours per week</div>
+      <div class="req-text">8 hours per day. 5 days per week. 7 hours backend. 1 hour DevOps. Every single day. No week off. No skipping sessions.</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🔨</div>
+      <div class="req-title">Build everything yourself</div>
+      <div class="req-text">No copying tutorials. No downloading starter code. You read the docs. You write the code. You debug it. Stack Overflow is for reference, not copying.</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🚀</div>
+      <div class="req-title">Every project goes live</div>
+      <div class="req-text">Nothing stays on localhost. Every boss project must be deployed and publicly accessible. Real users. Real uptime. Real accountability.</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">📖</div>
+      <div class="req-title">Read the docs first</div>
+      <div class="req-text">Official documentation always comes first. YouTube is for concepts you cannot understand after reading docs. Senior engineers read docs. Learn this now.</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🧪</div>
+      <div class="req-title">Tests are mandatory</div>
+      <div class="req-text">From Phase 2 onwards, untested code is not finished code. Write tests before or alongside your build. No exceptions, no shortcuts.</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">💀</div>
+      <div class="req-title">Embrace being stuck</div>
+      <div class="req-text">You will be stuck for hours. That is the job. Google, read, experiment, break things, fix them. Being stuck is not failure. Quitting is.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">FORGE<span>.</span>institute</div>
+  <div style="font-family: var(--mono); font-size: 11px; color: var(--text3); text-align:center;">// Eniola · Backend + DevOps Curriculum · 2026–2027<br>40h/week · 7h backend + 1h DevOps daily · 18 months · No shortcuts</div>
+  <div style="font-family: var(--mono); font-size: 11px; color: var(--text3);">Python → Django → Docker → AWS → Go</div>
+</footer>
+
+</body>
+</html>
